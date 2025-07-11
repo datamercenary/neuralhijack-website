@@ -5,15 +5,52 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
   <pre>
     <h1>No connections configured...</h1>
-    <p><span class="blink">&#x2588;</span></p>
+  <div id="shell"><p><span>> </span><span></span><span class="blink">&#x2588;</span></p></div>
   </pre>
 
   <div id="interlaced"></div>  
   <div id="glare"></div>
 </body>
+<script>
+  $(document).ready(function () {
+    $(document).on('keydown', function (e) {
+        const shell = document.getElementById('shell');
+        const prompt = shell.lastElementChild.firstElementChild.nextElementSibling;
+        const cursor = shell.lastElementChild.lastElementChild;
+
+        if (e.key === "Backspace") {
+          // Remove last character
+          let text = prompt.innerText;
+          prompt.innerText = text.slice(0, -1);
+          e.preventDefault(); // Prevent browser default behavior if needed
+        } else if (e.key === "Enter") {
+          if (prompt.innerText.length > 0) {
+            const newline = document.createElement('p');
+            newline.appendChild(document.createElement('span'));
+            newline.lastElementChild.innerText = '> ';
+            newline.appendChild(document.createElement('span'));
+            newline.appendChild(cursor);
+            shell.appendChild(newline);
+          }
+          e.preventDefault(); // Prevent form submissions or default actions
+        } else if (e.key.length === 1) {
+          // Regular printable characters (letters, numbers, symbols)
+          prompt.innerText += e.key;
+        }
+      });
+
+    /*$(document).on('keypress', function (e) {
+      // Convert keypress event to character
+      const char = String.fromCharCode(e.which);
+      $('#output').append(char);
+    });*/
+  });
+</script>
+
 </html>
