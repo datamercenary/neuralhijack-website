@@ -1,6 +1,6 @@
 body {
     background: rgb(33, 40, 37);
-    color: rgb(114, 243, 187);
+    color: rgb(147, 209, 182);
     text-shadow: 0 0 4px rgb(114, 243, 187);
     font-size: 1.5rem;
     font-family: "Share Tech Mono", monospace;
@@ -26,9 +26,78 @@ body {
     font-style: normal;
   }
 
+  h2 {
+    font-family: "Share Tech Mono", monospace;
+    color: rgb(147, 209, 182, 0.6);
+    text-shadow: 0 0 4px rgba(114, 243, 187, 0.6);
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .wrong {
+    color: rgb(212, 112, 112);
+    text-shadow: 0 0 4px rgb(212, 112, 112);
+
+  }
+
+  .correct {
+    color: rgb(112, 120, 212);
+    text-shadow: 0 0 4px rgb(112, 120, 212);
+
+  }
+
   pre {
     margin: auto;
-    margin-top: 10vh;
+    margin-top: 2vh;
+    display: table;
+  }
+
+  view {
+    margin: auto;
+    width: 60%;
+  }
+
+  #lattice {
+    margin: auto;
+    width: 60%;
+  }
+
+  .row {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    height: 15px;
+  }
+  
+  .grid {
+      display: grid;
+      grid-template-columns: repeat(13, 40px); /* 13 values + 1 for header */
+      gap: 0px;
+      margin-top: 20px;
+    }
+
+  .patch {  
+      background: rgb(33, 40, 37);
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 20px;
+      font-size: 14px;
+      user-select: none;
+    }
+
+  .sq {
+    width: 7.6923%;
+    height: 15px;
+    background-color: rgb(147, 209, 182);
+    display: inline-block;
+  }
+
+  cell {
+    margin: auto;
+    margin-top: 1vh;
+    width: 90%;
     display: table;
   }
 
@@ -51,7 +120,7 @@ body {
 
   #interlaced {
     position: fixed;
-    background: repeating-linear-gradient(transparent 0px 1px, hsl(154 0% 0%/.3) 3px 4px);
+    background: repeating-linear-gradient(transparent 0px 1px, rgba(0, 0, 0, 0.3) 3px 4px);
     top: 0;
     left: 0;
     right: 0;
