@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Multiplication Facts</title>
+    <title>Addition Facts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -12,15 +12,16 @@
 
 <body>
   <pre>
-    <h1>Multiplication Facts Practice</h1>
+    <h1>Addition Facts Practice</h1>
     
   </pre>
   <div id="grid" class="grid"></div>
   <div id="lattice" class="lattice"></div>
-  <view></view>
+  <view id="view"></view>
   <cell>
   <div id="shell"><p><span>> </span><span></span><span class="blink">&#x2588;</span></p></div>
   </cell>
+  <div id="keyboard"></div>
   <div id="interlaced"></div>  
   <div id="glare"></div>
 </body>
@@ -43,10 +44,10 @@ class Question {
   }
 
   getQuestionText () {
-    return this.i + ' * ' + this.j + ' = ' 
+    return this.i + ' + ' + this.j + ' = ';
   }
 
-  isCorrect (value) { return value == this.i * this.j; }
+  isCorrect (value) { return value == this.i + this.j; }
 
   checkAnswer (value) {
     let correct = this.isCorrect(value);
@@ -83,7 +84,7 @@ class Question {
 }
 
 const minMultiplicand = 0;
-const maxMultiplicand = 12;
+const maxMultiplicand = 6;
 const grid = [];
 const lattice = document.getElementById("lattice");
 const typingSpeed = 12;
@@ -175,7 +176,7 @@ function conclude() {
   }
   prompt = getPrompt();
   typeQuestion('Finished with a score of ' + score[0] + ' / ' + (score[0] + score[1]) + " or");
-  prompt.innerText = Math.round(1000 * score[0] / (score[0] + score[1])) / 10 + "%";
+  prompt.innerText = (Math.round(1000 * score[0] / (score[0] + score[1])) / 10) + "%";
   score.pop();
   score.pop();
   setTimeout(input, 500, 'Enter');
@@ -197,7 +198,7 @@ function submit(text) {
       score.push(0);
       score.push(0);
       askQuestion();
-      setTimeout(conclude, 300000)
+      setTimeout(conclude, 30000)
     }
   } else {
     currentQuestion[0].checkAnswer(text);
@@ -211,6 +212,64 @@ $(document).ready(function () {
     input(e.key);
   });
 });
+
+
+/*
+const startTime = performance.now();
+while ((performance.now() - startTime)/1000 < 30) {
+  let i = Math.floor(Math.random() * (maxMultiplicand - minMultiplicand + 1));
+  let j = Math.floor(Math.random() * (maxMultiplicand - minMultiplicand + 1));
+  let currentProblem = grid[i][j];
+  prompt.innerText = currentProblem.getQuestionText();
+} 
+*/
+
+//create keyboard
+const keyboard = document.getElementById("keyboard");
+
+keyboard.appendChild(document.createElement('div'));
+keyboard.firstElementChild.classList = 'line';
+const enterKey = document.createElement('div');
+//enterKey.classList = 'keybutton';
+enterKey.appendChild(document.createElement('img'));
+enterKey.firstElementChild.src = "../../keys/square_3wide_arrow.svg";
+//enterKey.firstElementChild.innerText = '\u2907';
+enterKey.addEventListener('click', (e) => { input('Enter'); });
+keyboard.firstElementChild.appendChild(enterKey);
+
+keyboard.appendChild(enterKey);
+for (let i = 0; i < 3; i++) {
+  keyboard.appendChild(document.createElement('div'));
+  keyboard.firstElementChild.classList = 'line';
+  for (let j = 0; j < 3; j++) {
+    const numKey = document.createElement('div');
+    const keyImg = document.createElement('img');
+    keyImg.src = "../../keys/" + (i * 3 + j + 1) + ".svg";
+    numKey.appendChild(keyImg);
+    //numKey.classList = 'key';
+    //numKey.appendChild(document.createElement('h6'));
+    //numKey.firstElementChild.innerText = i * 3 + j + 1;
+    //keyImg.addEventListener('click', (e) => { input(e.firstElementChild.innerText); });
+    keyImg.addEventListener('click', (e) => {  input((i * 3 + j + 1).toString());  });
+    keyboard.lastElementChild.appendChild(numKey);
+  }
+}
+
+keyboard.appendChild(document.createElement('div'));
+const z = document.createElement('div');
+z.classList = 'keybutton';
+z.appendChild(document.createElement('h6'));
+z.firstElementChild.innerText = '0';
+z.addEventListener('onclick', (e) => { input(e.firstElementChild.innerText); });
+keyboard.lastElementChild.appendChild(z);
+
+const bsc = document.createElement('div');
+bsc.classList = 'keybutton';
+bsc.appendChild(document.createElement('h6'));
+bsc.firstElementChild.innerText = '\u2902';
+bsc.addEventListener('onclick', (e) => { input('Backspace'); });
+keyboard.lastElementChild.appendChild(bsc);
+
 
 
 typeQuestion("Ready (1 = yes / 0 = no)?")

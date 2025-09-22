@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Addition Facts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="icon" href="../favicon.svg" type="image/x-icon">
+<style>
+
+    svg {
+    font-family: "Share Tech Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .key {
+    display: inline-block;
+  }
+</style>
+</head>
+<body style="background-color: rgb(44, 43, 43);">
+<div class="key" onclick="console.log('1 was clicked!');">
+    <svg width="280" height="225">
+        <defs>
+        <mask id="textCutoutMask1">
+            <!-- Everything within the mask that is white will be visible -->
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <!-- The text will be black, effectively "cutting out" the area -->
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">1</text>
+        </mask>
+        <mask id="textCutoutMask2">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">2</text>
+        </mask>
+        <mask id="textCutoutMask3">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">3</text>
+        </mask>
+        <mask id="textCutoutMask4">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">4</text>
+        </mask>
+        <mask id="textCutoutMask5">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">5</text>
+        </mask>
+        <mask id="textCutoutMask6">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">6</text>
+        </mask>
+        <mask id="textCutoutMask7">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">7</text>
+        </mask>
+        <mask id="textCutoutMask8">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">8</text>
+        </mask>
+        <mask id="textCutoutMask9">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">9</text>
+        </mask>
+        <mask id="textCutoutMask0">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">0</text>
+        </mask>
+        <mask id="textCutoutMaskBackspace">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">\u2902</text>
+        </mask>
+        <mask id="textCutoutMaskEnter">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">\u2904</text>
+        </mask>
+        </defs>
+        <rect x="5" y="5" width="50" height="105" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskEnter)"/> 
+        <rect x="60" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask1)"/> 
+        <rect x="115" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask2)"/> 
+        <rect x="170" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask3)"/> 
+        <rect x="225" y="5" width="50" height="105" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskEnter)"/> 
+        <rect x="60" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask4)"/> 
+        <rect x="115" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask5)"/> 
+        <rect x="170" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask6)"/> 
+        <rect x="60" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask7)"/> 
+        <rect x="115" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask8)"/> 
+        <rect x="170" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask9)"/> 
+        <rect x="5" y="170" width="105" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutBackspace)"/> 
+        <rect x="115" y="170" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask0)"/> 
+        <rect x="170" y="170" width="105" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskBackspace)"/> 
+    </svg>
+</div>
+<div class="key" onclick="console.log('2 was clicked!');">
+    <svg width="50" height="50">
+        <defs>
+        <mask id="textCutoutMask2">
+            <!-- Everything within the mask that is white will be visible -->
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <!-- The text will be black, effectively "cutting out" the area -->
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">2</text>
+        </mask>
+        </defs>
+        <rect x="0" y="0" width="50" height="50" fill="transparent"/>
+        <rect x="10" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask2)"/> 
+
+    </svg>
+</div>
+<div class="key" onclick="console.log('3 was clicked!');">
+    <svg width="50" height="50">
+        <defs>
+        <mask id="textCutoutMask3">
+            <!-- Everything within the mask that is white will be visible -->
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            <!-- The text will be black, effectively "cutting out" the area -->
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">3</text>
+        </mask>
+        </defs>
+        <rect x="0" y="0" width="50" height="50" fill="transparent"/>
+        <rect x="10" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask3)"/> 
+
+    </svg>
+</div>
+
+<div id="numpad">
+
+</div>
+
+<script>
+
+function input(k) {
+    console.log(k);
+}
+
+function makeKey(newKey, width=50, height=50, rx=8, ry=8, offset=55) {
+    const kdiv = document.createElement('div');
+    kdiv.classList = 'button';
+    const ksvg = kdiv.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
+    ksvg.style.width = width;
+    ksvg.style.height = height;
+    const kdefs = ksvg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'defs'));
+    const kmask = kdefs.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'mask'));
+    kmask.id = "maskCutout" + newKey;
+    const maskr = kmask.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+    maskr.setAttribute("fill", 'white');
+    maskr.setAttribute("x", '0');
+    maskr.setAttribute("y", '0');
+    maskr.setAttribute("width", '100%');
+    maskr.setAttribute("height", '100%');
+    const maskt = kmask.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'text'));
+    maskt.setAttribute('x', "50%");
+    maskt.setAttribute('y', offset + "%");
+    maskt.setAttribute('fill', "black");
+    maskt.setAttribute('text-anchor', "middle");
+    maskt.setAttribute('dominant-baseline', "middle");
+    maskt.setAttribute('font-size', "2em"); 
+    maskt.innerHTML = newKey;
+    const krect = ksvg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+    krect.style.fill = '#93d1b6';
+    krect.style.rx = rx;
+    krect.style.ry = ry;
+    krect.style.x = '0';
+    krect.style.y = '0';
+    krect.style.width = width;
+    krect.style.height = height;
+    krect.setAttribute('mask', "url(#" + kmask.id + ")");
+    return kdiv;
+}
+
+const numpad = document.getElementById('numpad');
+numpad.appendChild(makeKey('E', '20%', '50%'));
+numpad.lastElementChild.left = '0%';
+numpad.lastElementChild.top = '0%';
+numpad.lastElementChild.onclick = "input('E')";
+numpad.appendChild(makeKey('E', '20%', '50%'));
+numpad.lastElementChild.left = '80%';
+numpad.lastElementChild.top = '0%';
+numpad.lastElementChild.onclick = "input('E')";
+
+numpad.appendChild(makeKey('B', '40%', '25%'));
+numpad.lastElementChild.left = '0%';
+numpad.lastElementChild.top = '75%';
+numpad.lastElementChild.onclick = "input('B')";
+
+numpad.appendChild(makeKey('B', '40%', '25%'));
+numpad.lastElementChild.left = '60%';
+numpad.lastElementChild.top = '75%';
+numpad.lastElementChild.onclick = "input('B')";
+
+numpad.appendChild(makeKey('0', '20%', '25%'));
+numpad.lastElementChild.left = '40%';
+numpad.lastElementChild.top = '75%';
+numpad.lastElementChild.onclick = "input('0')";
+
+
+for (r=0; r<3; r++) {
+    for (c=0; c<3; c++) {
+        const ky = makeKey((1 + c + 3*r), '20%', '25%');
+        ky.left = (20 + 20*c) + '%';
+        ky.top = (25 * r) + '%';
+    }
+}
+
+const newText = ('<svg width="50" height="50">'
+                 + '<defs><mask id="textMask8">'
+                 + '<rect x="0" y="0" width="100%" height="100%" fill="white">'
+                 + '<text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" font-size="2em" fill="black">8</text>'
+                 + '</rect></mask></defs>'
+                 + '<rect x="0" y="0" width="50" height="50" rx="8" ry="8" fill="#93d1b6" mask="url(#textMask8)"/></svg>');
+
+</script>
+
+    
+</body>
+</html>
