@@ -22,7 +22,7 @@
 </style>
 </head>
 <body style="background-color: rgb(44, 43, 43);">
-<div class="key" onclick="console.log('1 was clicked!');">
+<div class="key">
     <svg width="280" height="225">
         <defs>
         <mask id="textCutoutMask1">
@@ -77,19 +77,19 @@
         </mask>
         </defs>
         <rect x="5" y="5" width="50" height="105" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskEnter)"/> 
-        <rect x="60" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask1)"/> 
-        <rect x="115" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask2)"/> 
-        <rect x="170" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask3)"/> 
-        <rect x="225" y="5" width="50" height="105" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskEnter)"/> 
-        <rect x="60" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask4)"/> 
-        <rect x="115" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask5)"/> 
-        <rect x="170" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask6)"/> 
-        <rect x="60" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask7)"/> 
-        <rect x="115" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask8)"/> 
-        <rect x="170" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask9)"/> 
-        <rect x="5" y="170" width="105" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutBackspace)"/> 
-        <rect x="115" y="170" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask0)"/> 
-        <rect x="170" y="170" width="105" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskBackspace)"/> 
+        <rect x="60" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask1)" onclick="console.log('1 was clicked!');"/> 
+        <rect x="115" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask2)" onclick="console.log('2 was clicked!');"/> 
+        <rect x="170" y="5" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask3)" onclick="console.log('3 was clicked!');"/> 
+        <rect x="225" y="5" width="50" height="105" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskEnter)" onclick="console.log('Enter was clicked!');"/> 
+        <rect x="60" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask4)" onclick="console.log('4 was clicked!');"/> 
+        <rect x="115" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask5)" onclick="console.log('5 was clicked!');"/> 
+        <rect x="170" y="60" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask6)" onclick="console.log('6 was clicked!');"/> 
+        <rect x="60" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask7)" onclick="console.log('7 was clicked!');"/> 
+        <rect x="115" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask8)" onclick="console.log('8 was clicked!');"/> 
+        <rect x="170" y="115" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask9)" onclick="console.log('9 was clicked!');"/> 
+        <rect x="5" y="170" width="105" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutBackspace)" onclick="console.log('Backspace was clicked!');"/> 
+        <rect x="115" y="170" width="50" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMask0)" onclick="console.log('0 was clicked!');"/> 
+        <rect x="170" y="170" width="105" height="50" rx="12" ry="12" fill="#93d1b6" mask="url(#textCutoutMaskBackspace)" onclick="console.log('Backspace was clicked!');"/> 
     </svg>
 </div>
 <div class="key" onclick="console.log('2 was clicked!');">

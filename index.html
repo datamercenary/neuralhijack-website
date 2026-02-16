@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>root</title>
+  <title>> &#x2588;</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -21,6 +21,8 @@
   <div id="glare"></div>
 </body>
 <script>
+  var input_memory = [];
+  var input_selector = 0;
   function submit(text) {
     console.log(text);
     if (text === 'clear' || text === 'cls') {
@@ -54,12 +56,22 @@
         newline.appendChild(document.createElement('span'));
         newline.appendChild(cursor);
         shell.appendChild(newline);
+        if (shell.childElementCount > 6) {
+          shell.removeChild(shell.firstChild);
+        }
         submit(prompt.innerText);
+        input_memory.push(prompt.innerText);
+
       }
     } else if (k.length === 1) {
       // Regular printable characters (letters, numbers, symbols)
       prompt.innerText += k;
-  };
+    } else if (k === 'ArrowUp') {
+      input_selector = Math.min(input_selector + 1, shell.childElementCount);
+    } else if (k === 'ArrowDown') {
+      input_selector = Math.max(input_selector - 1, 0);
+      
+    };
   };
 /*$(document).ready(function () {
   $(document).on('keydown', input(e.key))

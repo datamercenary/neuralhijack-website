@@ -28,8 +28,8 @@ function value(x, y){
 
 const x = d3.scaleLinear([-2, 2], [0, width + 28]);
 const y = d3.scaleLinear([-2, 1], [height, 0]);
-const thresholds = d3.range(1, 20).map(i => Math.pow(2, i));
-const color = d3.scaleSequentialLog(d3.extent(thresholds), d3.interpolateMagma);
+const thresholds = d3.range(0, 19).map(i => Math.pow(2, i));
+const color = d3.scaleSequentialLog(d3.extent(thresholds), d3.interpolateYlOrRd);
 
 const q = 4; // The level of detail, e.g., sample every 4 pixels in x and y.
 const x0 = -q / 2, x1 = width + 28 + q;
@@ -59,11 +59,13 @@ contours = d3.contours()
       .style("display", "block")
       .style("margin", "0 -14px")
       .style("width", "calc(100% + 28px)");
+  svg.data['value'] = 0;
 
   svg.append("g")
       .attr("fill", "none")
       .attr("stroke", "#fff")
-      .attr("stroke-opacity", 0.5)
+      .attr("stroke-opacity", 0.0);
+const path = svg.select('g')
     .selectAll("path")
     .data(contours)
     .join("path")
@@ -71,6 +73,24 @@ contours = d3.contours()
       .attr("d", d3.geoPath());
 
 document.body.appendChild(svg.node())
+
+function fun(){
+  svg.data['value'] = (svg.data['value'] + 1) % 10;
+  console.log('clicked with' + svg.data['value']);
+  
+  let nthresholds = d3.range(0, 19).map(i => Math.pow(2, i + (svg.data['value']/10)));
+  let ncolor = d3.scaleSequentialLog(d3.extent(nthresholds), d3.interpolateYlOrRd);
+  ctrs = d3.contours()
+    .size([grid.n, grid.m])
+    .thresholds(nthresholds)
+  (grid)
+    .map(transform)
+
+  path.data(ctrs).join("path").attr("fill", d => ncolor(d.value)).attr("d", d3.geoPath());
+}
+
+d3.select('svg')
+  .on('click', fun);
 
   </script>
 </html>
