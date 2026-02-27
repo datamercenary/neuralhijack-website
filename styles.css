@@ -13,11 +13,25 @@ body {
     font-style: normal;
   }
 
-  #shell p {
+  .shell-line {
+    position: relative;
+  }  
+
+  .shell-line p {
     margin: 12px 12px 0px 12px;
     font-family: "Share Tech Mono", monospace;
     font-weight: 400;
     font-style: normal;
+  }
+
+  .cursor-line {
+    position: absolute;
+    top: -12px;
+    left: 0px;
+  }
+
+  .hide {
+    visibility: hidden;
   }
 
   h1 {
