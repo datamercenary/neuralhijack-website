@@ -22,6 +22,7 @@ body {
     font-family: "Share Tech Mono", monospace;
     font-weight: 400;
     font-style: normal;
+    white-space: pre-wrap;
   }
 
   .cursor-line {

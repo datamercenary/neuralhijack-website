@@ -93,7 +93,6 @@
       }
     } else if (k.length === 1) {
       // Regular printable characters (letters, numbers, symbols)
-      //prompt.innerText += k;
       prompt.innerHTML = prompt.innerHTML.slice(0, curpos.innerHTML.length) + k + prompt.innerHTML.slice(curpos.innerHTML.length, prompt.innerHTML.length);
       curpos.innerHTML = curpos.innerHTML + '_';
       input_memory[input_memory.length - 1] = prompt.innerHTML;
