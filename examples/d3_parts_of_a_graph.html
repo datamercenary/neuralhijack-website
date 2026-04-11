@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>d3 Parts of a Graph</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <svg id="view" width="100%" height="100%" background-color="#444">
+        <rect width="10%" height="20%" fill="#777"></rect>
+    </svg>
+  </body>
+  <script>
+    var numbers = [5, 4, 10, 1],
+        data = [{date: '2025-08-01', amount: 10},
+                {date: '2025-08-08', amount: 20},
+                {date: '2025-08-15', amount: 30},
+                {date: '2025-08-22', amount: 50},
+                {date: '2025-08-29', amount: 80},
+                {date: '2025-09-05', amount: 130},
+                {date: '2025-09-12', amount: 210},
+                {date: '2025-09-19', amount: 340},
+        ];
+    var y = d3.scaleLinear().domain(d3.extent(data, d => d.amount)).range([500, 0]);
+    var x = d3.scaleTime().domain([new Date(Date.parse(d3.min(data, d => d.amount))),
+                                   new Date(Date.parse(d3.max(data, d => d.amount)))
+                                  ]).range([0, 800]);
+
+    var xAxis = d3.axisBottom(x).ticks(4),
+        yAxis = d3.axisLeft(y).ticks(5),
+        svg = d3.select('#view');
+
+    svg.append('g').attr('class', 'x axis').call(xAxis);
+    svg.append('g').attr('class', 'y axis').call(yAxis);
+
+    var sales = [
+                { product: 'Hoodie',  count: 7 },
+                { product: 'Jacket',  count: 6 },
+                { product: 'Snuggie', count: 9 },
+                ];
+    
+    var h = 240;
+
+    var svg2 = (d3.select('body').append('svg')
+                  .style('width', '100%')
+                  .style('height', h)
+                ),
+        rects = svg2.selectAll('rect').data(sales);
+
+
+    var garments = svg2.selectAll('rect').data(sales);
+    var maxGarments = d3.max(sales, (d, i) => d.count);
+    var xGarment = d3.scaleLinear().range([0, 800]).domain([0, maxGarments]);
+    var yGarment = d3.scaleBand().range([0, h]).domain(sales.map((d, i) => d.product));
+
+    garments.join(newRects => {
+        newRects.append('rect')
+          .attr('x', xGarment(0))
+          .attr('y', (d, i) => yGarment(d.product))
+          .attr('height', yGarment.step())
+          .attr('width', (d, i) => xGarment(d.count));
+    },
+    rects => {},
+    rectsToRemove => {
+      rectsToRemove.remove();
+    }
+);
+
+function getData() {
+  let data = [];
+  let numItems = Math.ceil(Math.random() * 5 + 2);
+
+  for (let i=0; i<numItems; i++) {
+    data.push(Math.random() * 60);
+  }
+  return data;
+}
+
+function update(data) {
+  d3.select('#view')
+    .selectAll('circle')
+    .data(data)
+    .join(function(enter) {
+            return enter.append('circle')
+                  .style('opacity', 0.25);
+          },
+          function(update) {
+            return update.style('opacity', 1);
+          }
+         )
+    .attr('cx', (d, i) => i * 80 + 30)
+    .attr('cy', 50)
+    .attr('r', (d) => d * 0.5)
+    .style('fill', function(d) {
+      return d > 15 ? 'orange' : '#aaa';
+    });
+}
+
+function updateAll() {
+  let myData = getData();
+  update(myData);
+}
+
+updateAll()
+
+var hbutton = document.createElement('div');
+hbutton.style.backgroundColor = 'orange';
+hbutton.style.width = '120px';
+hbutton.style.height = '40px';
+hbutton.innerHTML = '<p>Click!</p>'
+
+hbutton.addEventListener('click', (e) => { console.log('hey'); updateAll(); })
+
+document.body.appendChild(hbutton)
+
+  </script>
+</html>

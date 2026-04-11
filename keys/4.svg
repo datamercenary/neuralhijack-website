@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="14.688403mm"
+   height="14.688403mm"
+   viewBox="0 0 14.688403 14.688403"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="4.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="5.015005"
+     inkscape:cx="32.901264"
+     inkscape:cy="54.336935"
+     inkscape:window-width="1445"
+     inkscape:window-height="1022"
+     inkscape:window-x="-13"
+     inkscape:window-y="-1"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect4"
+       style="fill:#93d1b6;stroke-width:0.508;stroke-linecap:round"
+       d="M 3.5563721 0 C 1.5862726 6.2665859e-16 0 1.5862726 0 3.5563721 L 0 11.132137 C 6.2665859e-16 13.102237 1.5862726 14.688509 3.5563721 14.688509 L 11.132137 14.688509 C 13.102237 14.688509 14.688509 13.102237 14.688509 11.132137 L 14.688509 3.5563721 C 14.688509 1.5862726 13.102237 0 11.132137 0 L 3.5563721 0 z M 6.4864258 3.3930745 L 7.4005819 3.3930745 L 6.249231 8.7100627 L 7.6036702 8.7100627 L 7.6036702 6.1360596 L 8.5633016 6.1360596 L 8.5633016 8.7100627 L 9.4102783 8.7100627 L 9.4102783 9.5343018 L 8.5633016 9.5343018 L 8.5633016 11.295435 L 7.6036702 11.295435 L 7.6036702 9.5343018 L 5.2782308 9.5343018 L 5.2782308 8.5633016 L 6.4864258 3.3930745 z " />
+  </g>
+</svg>

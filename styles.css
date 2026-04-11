@@ -1,6 +1,6 @@
 body {
     background: rgb(33, 40, 37);
-    color: rgb(114, 243, 187);
+    color: rgb(147, 209, 182);
     text-shadow: 0 0 4px rgb(114, 243, 187);
     font-size: 1.5rem;
     font-family: "Share Tech Mono", monospace;
@@ -13,11 +13,26 @@ body {
     font-style: normal;
   }
 
-  #shell p {
+  .shell-line {
+    position: relative;
+  }  
+
+  .shell-line p {
     margin: 12px 12px 0px 12px;
     font-family: "Share Tech Mono", monospace;
     font-weight: 400;
     font-style: normal;
+    white-space: pre-wrap;
+  }
+
+  .cursor-line {
+    position: absolute;
+    top: -12px;
+    left: 0px;
+  }
+
+  .hide {
+    visibility: hidden;
   }
 
   h1 {
@@ -26,11 +41,138 @@ body {
     font-style: normal;
   }
 
+  h2 {
+    font-family: "Share Tech Mono", monospace;
+    color: rgb(147, 209, 182, 0.6);
+    text-shadow: 0 0 4px rgba(114, 243, 187, 0.6);
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .wrong {
+    color: rgb(212, 112, 112);
+    text-shadow: 0 0 4px rgb(212, 112, 112);
+
+  }
+
+  .correct {
+    color: rgb(112, 120, 212);
+    text-shadow: 0 0 4px rgb(112, 120, 212);
+
+  }
+
   pre {
     margin: auto;
-    margin-top: 10vh;
+    margin-top: 2vh;
     display: table;
   }
+
+  view {
+    margin: auto;
+    width: 60%;
+  }
+
+  #lattice {
+    margin: auto;
+    width: 60%;
+  }
+
+  .row {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    height: 15px;
+  }
+  
+  .grid {
+      display: grid;
+      grid-template-columns: repeat(13, 40px); /* 13 values + 1 for header */
+      gap: 0px;
+      margin-top: 20px;
+    }
+
+  .patch {  
+      background: rgb(33, 40, 37);
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 20px;
+      font-size: 14px;
+      user-select: none;
+    }
+
+  .sq {
+    width: 7.6923%;
+    height: 15px;
+    background-color: rgb(147, 209, 182);
+    display: inline-block;
+  }
+
+  cell {
+    margin: auto;
+    margin-top: 1vh;
+    width: 90%;
+    display: table;
+  }
+
+  #numpad {
+    position: fixed;      /* sticks to viewport */
+    bottom: 0;            /* aligned at bottom */
+    left: 0;
+    width: 100%;          /* full width */
+    height: 30%;        /* adjust as needed */
+    background: #2f2f2f;     /* visual background */
+    z-index: 1000;        /* sits on top of page */
+  }
+
+  .button {
+      position: absolute;   /* allows manual x/y placement */
+      width: 50px;
+      height: 50px;
+      background: #ccc;
+      border: 1px solid #888;
+      border-radius: 6px;
+      text-align: center;
+      line-height: 50px;
+  }
+
+  .keybutton {
+    display: inline-block;
+    color: rgb(33, 40, 37);
+    background: rgb(147, 209, 182);
+    border-radius: 25px;
+  }
+
+  .board {
+      display: flex;
+      flex-direction: column;
+      gap: 8px; /* space between rows */
+      max-width: 300px; /* adjust size as needed */
+      margin: 20px auto;
+    }
+
+    .line {
+      display: flex;
+      gap: 8px; /* space between keys */
+    }
+
+    .key {
+      flex: 1; /* make all keys in a row equal width */
+      padding: 15px 0;
+      text-align: center;
+      font-size: 1.2em;
+      color: rgb(33, 40, 37);
+      background: rgb(147, 209, 182);
+      border-radius: 6px;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+
+    .key:active {
+      background-color: #ccc;
+    }
+
 
   #glare {
     position: fixed;
@@ -51,7 +193,7 @@ body {
 
   #interlaced {
     position: fixed;
-    background: repeating-linear-gradient(transparent 0px 1px, hsl(154 0% 0%/.3) 3px 4px);
+    background: repeating-linear-gradient(transparent 0px 1px, rgba(0, 0, 0, 0.3) 3px 4px);
     top: 0;
     left: 0;
     right: 0;
