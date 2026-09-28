@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Normal Distribution</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../styles.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="icon" href="../../../favicon.svg" type="image/x-icon">
+  <style>
+    :root {
+      --normal-muted: rgba(147, 209, 182, 0.72);
+      --normal-line: rgba(147, 209, 182, 0.3);
+      --normal-bar: rgb(114, 243, 187);
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+    }
+
+    .normal-page {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: clamp(1rem, 3vw, 2.5rem) clamp(0.75rem, 4vw, 4rem);
+    }
+
+    .normal-title {
+      flex: 0 1 auto;
+      margin: 0;
+      text-align: center;
+      font-size: clamp(1rem, 2.6vw, 1.8rem);
+      font-weight: 400;
+      overflow-wrap: anywhere;
+    }
+
+    .normal-chart {
+      flex: 1 1 auto;
+      min-height: 12rem;
+      width: 100%;
+      min-width: 0;
+      background: transparent;
+    }
+
+    #histogram {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 12rem;
+      overflow: visible;
+    }
+
+    #histogram text {
+      fill: var(--normal-muted);
+      font: 14px "Share Tech Mono", monospace;
+    }
+
+    #histogram .domain,
+    #histogram .tick line {
+      stroke: var(--normal-line);
+    }
+
+    #histogram .bar {
+      fill: var(--normal-bar);
+      fill-opacity: 0.72;
+      stroke: rgb(33, 40, 37);
+      shape-rendering: crispEdges;
+    }
+
+    .normal-axis-label {
+      fill: var(--normal-muted);
+      font: 14px "Share Tech Mono", monospace;
+    }
+
+    .normal-prompt {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      min-height: 2.5rem;
+      padding: 0.35rem 0.5rem;
+      background: transparent;
+    }
+
+    .normal-prompt-label {
+      flex: 0 0 auto;
+    }
+
+    #command-input {
+      box-sizing: border-box;
+      flex: 1 1 auto;
+      min-width: 0;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      font: inherit;
+      text-shadow: inherit;
+    }
+
+    #command-input::placeholder {
+      color: var(--normal-muted);
+      opacity: 0.7;
+    }
+
+    #command-status {
+      flex: 0 0 auto;
+      min-height: 1.2em;
+      color: var(--normal-muted);
+      font-size: 0.72em;
+      text-align: right;
+    }
+
+    #command-status.error {
+      color: rgb(212, 112, 112);
+      text-shadow: 0 0 4px rgb(212, 112, 112);
+    }
+
+    @media (max-width: 600px) {
+      .normal-page {
+        gap: 0.65rem;
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+      }
+
+      .normal-prompt {
+        flex-wrap: wrap;
+      }
+
+      #command-status {
+        flex-basis: 100%;
+        text-align: left;
+      }
+
+      #histogram text {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="normal-page">
+    <h1 id="distribution-title" class="normal-title"></h1>
+    <section class="normal-chart" aria-label="Normal distribution histogram">
+      <svg id="histogram" role="img" aria-labelledby="distribution-title"></svg>
+    </section>
+    <form id="command-form" class="normal-prompt" autocomplete="off">
+      <label class="normal-prompt-label" for="command-input">&gt;</label>
+      <input id="command-input" name="command" type="text" inputmode="text" spellcheck="false" placeholder="mu=100, sigma=15, bins=32, samples=10000">
+      <output id="command-status" aria-live="polite">ready</output>
+    </form>
+  </main>
+  <div id="interlaced"></div>
+  <div id="glare"></div>
+  <script>
+    const defaults = { mu: 100, sigma: 15, bins: 32, samples: 10000 };
+    const limits = { minBins: 2, maxBins: 256, maxSamples: 1000000 };
+    const state = { ...defaults };
+    const title = document.getElementById('distribution-title');
+    const chart = d3.select('#histogram');
+    const form = document.getElementById('command-form');
+    const commandInput = document.getElementById('command-input');
+    const commandStatus = document.getElementById('command-status');
+
+    function formatNumber(value) {
+      return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(4)));
+    }
+
+    function gaussianRandom(mean, standardDeviation) {
+      let first = 0;
+      let second = 0;
+      while (first === 0) first = Math.random();
+      while (second === 0) second = Math.random();
+      const radius = Math.sqrt(-2 * Math.log(first));
+      const angle = 2 * Math.PI * second;
+      return mean + standardDeviation * radius * Math.cos(angle);
+    }
+
+    function generateSamples() {
+      return Array.from({ length: state.samples }, () => gaussianRandom(state.mu, state.sigma));
+    }
+
+    function updateTitle() {
+      title.textContent = `Normal(mu=${formatNumber(state.mu)}, sigma=${formatNumber(state.sigma)}, bins=${state.bins}, samples=${state.samples})`;
+    }
+
+    function updateChart() {
+      const values = generateSamples();
+      const width = 1000;
+      const height = 560;
+      const margin = { top: 24, right: 24, bottom: 64, left: 68 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+      const extent = d3.extent(values);
+      const spread = Math.max(extent[1] - extent[0], state.sigma);
+      const xDomain = [extent[0] - spread * 0.04, extent[1] + spread * 0.04];
+      const bins = d3.bin().domain(xDomain).thresholds(state.bins)(values);
+      const x = d3.scaleLinear().domain(xDomain).range([0, innerWidth]);
+      const y = d3.scaleLinear().domain([0, d3.max(bins, bin => bin.length) || 1]).nice().range([innerHeight, 0]);
+
+      chart.attr('viewBox', `0 0 ${width} ${height}`);
+      chart.selectAll('*').remove();
+      const plot = chart.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+      plot.append('g')
+        .attr('class', 'y-axis')
+        .call(d3.axisLeft(y).ticks(6).tickFormat(d3.format('~s')));
+      plot.append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('~g')));
+      plot.append('text')
+        .attr('class', 'normal-axis-label')
+        .attr('x', innerWidth / 2)
+        .attr('y', innerHeight + 50)
+        .attr('text-anchor', 'middle')
+        .text('value');
+      plot.append('text')
+        .attr('class', 'normal-axis-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -innerHeight / 2)
+        .attr('y', -48)
+        .attr('text-anchor', 'middle')
+        .text('count');
+      plot.selectAll('.bar')
+        .data(bins)
+        .join('rect')
+        .attr('class', 'bar')
+        .attr('x', bin => x(bin.x0) + 1)
+        .attr('y', bin => y(bin.length))
+        .attr('width', bin => Math.max(0, x(bin.x1) - x(bin.x0) - 1))
+        .attr('height', bin => innerHeight - y(bin.length));
+    }
+
+    function setStatus(message, isError = false) {
+      commandStatus.textContent = message;
+      commandStatus.classList.toggle('error', isError);
+    }
+
+    function validateValue(name, value) {
+      if (!Number.isFinite(value)) throw new Error(`${name} must be a number`);
+      if (name === 'sigma' && value <= 0) throw new Error('sigma must be greater than 0');
+      if (name === 'bins' && (!Number.isInteger(value) || value < limits.minBins || value > limits.maxBins)) {
+        throw new Error(`bins must be an integer from ${limits.minBins} to ${limits.maxBins}`);
+      }
+      if (name === 'samples' && (!Number.isInteger(value) || value < 1 || value > limits.maxSamples)) {
+        throw new Error(`samples must be an integer from 1 to ${limits.maxSamples}`);
+      }
+    }
+
+    function runCommand(command) {
+      const normalized = command.trim().toLowerCase();
+      if (!normalized) return;
+      if (normalized === 'help') {
+        setStatus('use mu, sigma, bins, samples; reset restores defaults');
+        return;
+      }
+      if (normalized === 'reset') {
+        Object.assign(state, defaults);
+        updateTitle();
+        updateChart();
+        setStatus('reset');
+        return;
+      }
+
+      const assignments = normalized.split(/[,\s]+/).filter(Boolean);
+      const updates = {};
+      for (const assignment of assignments) {
+        const match = assignment.match(/^(mu|sigma|bins|samples)=([-+]?\d*\.?\d+(?:e[-+]?\d+)?)$/);
+        if (!match) throw new Error(`unknown command: ${assignment}`);
+        const name = match[1];
+        const value = Number(match[2]);
+        validateValue(name, value);
+        updates[name] = value;
+      }
+      Object.assign(state, updates);
+      updateTitle();
+      updateChart();
+      setStatus('updated');
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      try {
+        runCommand(commandInput.value);
+        commandInput.value = '';
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+      commandInput.focus();
+    });
+
+    updateTitle();
+    updateChart();
+    commandInput.focus();
+  </script>
+</body>
+</html>

@@ -20,6 +20,9 @@
     } else if (text === 'addition') {
       //console.log(text)
       window.location.replace('math/addition/facts.html');
+    } else if (text === 'normal') {
+      //console.log(text)
+      window.location.replace('data/distributions/normal/plot.html');
     }
   };
   function add_shell_line() {
@@ -93,6 +96,7 @@
       }
     } else if (k.length === 1) {
       // Regular printable characters (letters, numbers, symbols)
+
       prompt.innerHTML = prompt.innerHTML.slice(0, curpos.innerHTML.length) + k + prompt.innerHTML.slice(curpos.innerHTML.length, prompt.innerHTML.length);
       curpos.innerHTML = curpos.innerHTML + '_';
       input_memory[input_memory.length - 1] = prompt.innerHTML;

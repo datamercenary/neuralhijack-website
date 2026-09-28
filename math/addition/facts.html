@@ -21,7 +21,7 @@
   <cell>
   <div id="shell"><p><span>> </span><span></span><span class="blink">&#x2588;</span></p></div>
   </cell>
-  <div id="keyboard"></div>
+  <div id="interface"></div>
   <div id="interlaced"></div>  
   <div id="glare"></div>
 </body>
@@ -84,7 +84,7 @@ class Question {
 }
 
 const minMultiplicand = 0;
-const maxMultiplicand = 6;
+const maxMultiplicand = 12;
 const grid = [];
 const lattice = document.getElementById("lattice");
 const typingSpeed = 12;
@@ -198,7 +198,7 @@ function submit(text) {
       score.push(0);
       score.push(0);
       askQuestion();
-      setTimeout(conclude, 30000)
+      setTimeout(conclude, 180000)
     }
   } else {
     currentQuestion[0].checkAnswer(text);
@@ -225,28 +225,17 @@ while ((performance.now() - startTime)/1000 < 30) {
 */
 
 //create keyboard
-const keyboard = document.getElementById("keyboard");
+const keyboard = document.getElementById("interface");
 
-keyboard.appendChild(document.createElement('div'));
-keyboard.firstElementChild.classList = 'line';
-const enterKey = document.createElement('div');
-//enterKey.classList = 'keybutton';
-enterKey.appendChild(document.createElement('img'));
-enterKey.firstElementChild.src = "../../keys/square_3wide_arrow.svg";
-//enterKey.firstElementChild.innerText = '\u2907';
-enterKey.addEventListener('click', (e) => { input('Enter'); });
-keyboard.firstElementChild.appendChild(enterKey);
-
-keyboard.appendChild(enterKey);
 for (let i = 0; i < 3; i++) {
   keyboard.appendChild(document.createElement('div'));
-  keyboard.firstElementChild.classList = 'line';
+  keyboard.lastElementChild.classList = 'channel';
   for (let j = 0; j < 3; j++) {
     const numKey = document.createElement('div');
     const keyImg = document.createElement('img');
     keyImg.src = "../../keys/" + (i * 3 + j + 1) + ".svg";
     numKey.appendChild(keyImg);
-    //numKey.classList = 'key';
+    numKey.classList = 'btn';
     //numKey.appendChild(document.createElement('h6'));
     //numKey.firstElementChild.innerText = i * 3 + j + 1;
     //keyImg.addEventListener('click', (e) => { input(e.firstElementChild.innerText); });
@@ -256,18 +245,31 @@ for (let i = 0; i < 3; i++) {
 }
 
 keyboard.appendChild(document.createElement('div'));
+keyboard.lastElementChild.classList = 'channel';
+let enterKey = document.createElement('div');
+//enterKey.classList = 'btn
+// ';
+enterKey.appendChild(document.createElement('img'));
+enterKey.firstElementChild.src = "../../keys/square_3wide_arrow.svg";
+//enterKey.firstElementChild.innerText = '\u2907';
+enterKey.addEventListener('click', (e) => { input('Enter'); });
+keyboard.lastElementChild.appendChild(enterKey);
+
+
 const z = document.createElement('div');
-z.classList = 'keybutton';
-z.appendChild(document.createElement('h6'));
-z.firstElementChild.innerText = '0';
-z.addEventListener('onclick', (e) => { input(e.firstElementChild.innerText); });
+z.classList = 'btn';
+z.appendChild(document.createElement('img'));
+z.firstElementChild.src = "../../keys/0.svg";
+z.addEventListener('click', (e) => { input('0'); });
 keyboard.lastElementChild.appendChild(z);
 
 const bsc = document.createElement('div');
-bsc.classList = 'keybutton';
-bsc.appendChild(document.createElement('h6'));
-bsc.firstElementChild.innerText = '\u2902';
-bsc.addEventListener('onclick', (e) => { input('Backspace'); });
+bsc.classList = 'btn';
+const keyImg = document.createElement('img');
+keyImg.src = "../../keys/square_backspace.svg";
+bsc.appendChild(keyImg);
+/*bsc.firstElementChild.innerText = '\u2902';*/
+bsc.addEventListener('click', (e) => { input('Backspace'); });
 keyboard.lastElementChild.appendChild(bsc);
 
 

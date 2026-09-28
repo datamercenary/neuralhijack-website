@@ -126,11 +126,46 @@ body {
     z-index: 1000;        /* sits on top of page */
   }
 
+  /* Overlay at bottom center */
+#interface {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 600px;
+  height: 240px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: none;
+  /*border: 2px solid black; */
+  visibility: collapse;
+}
+
+/* Each row auto-splits height */
+#interface .channel {
+  flex: 1; /* equal vertical partition */
+
+  display: flex; /* enables horizontal split */
+  margin-bottom: 8px;
+}
+
+/* Buttons auto-split width */
+#interface .channel .btn {
+  flex: 1;
+  /*background: #ccc;
+  border: 1px solid #888;*/
+  border-radius: 6px;
+  text-align: center;
+}
+
   .button {
       position: absolute;   /* allows manual x/y placement */
       width: 50px;
       height: 50px;
-      background: #ccc;
+      background: none;
       border: 1px solid #888;
       border-radius: 6px;
       text-align: center;
