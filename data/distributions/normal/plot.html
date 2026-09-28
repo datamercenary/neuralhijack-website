@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="../../../js/site-map.js"></script>
   <link rel="icon" href="../../../favicon.svg" type="image/x-icon">
   <style>
     :root {
@@ -96,6 +97,19 @@
       background: transparent;
     }
 
+    .normal-command-area {
+      flex: 0 0 auto;
+    }
+
+    .normal-prompt .shell-line p {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .normal-prompt .prompt-trailing {
+      white-space: pre-wrap;
+    }
+
     .normal-prompt-label {
       flex: 0 0 auto;
     }
@@ -118,11 +132,13 @@
     }
 
     #command-status {
-      flex: 0 0 auto;
+      display: block;
       min-height: 1.2em;
       color: var(--normal-muted);
       font-size: 0.72em;
-      text-align: right;
+      padding-left: 1.8rem;
+      white-space: pre-wrap;
+      text-align: left;
     }
 
     #command-status.error {
@@ -136,12 +152,7 @@
         padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
       }
 
-      .normal-prompt {
-        flex-wrap: wrap;
-      }
-
       #command-status {
-        flex-basis: 100%;
         text-align: left;
       }
 
@@ -157,11 +168,10 @@
     <section class="normal-chart" aria-label="Normal distribution histogram">
       <svg id="histogram" role="img" aria-labelledby="distribution-title"></svg>
     </section>
-    <form id="command-form" class="normal-prompt" autocomplete="off">
-      <label class="normal-prompt-label" for="command-input">&gt;</label>
-      <input id="command-input" name="command" type="text" inputmode="text" spellcheck="false" placeholder="mu=100, sigma=15, bins=32, samples=10000">
+    <div class="normal-command-area">
+      <div id="shell" class="normal-prompt" aria-label="Command prompt"></div>
       <output id="command-status" aria-live="polite">ready</output>
-    </form>
+    </div>
   </main>
   <div id="interlaced"></div>
   <div id="glare"></div>
@@ -171,8 +181,6 @@
     const state = { ...defaults };
     const title = document.getElementById('distribution-title');
     const chart = d3.select('#histogram');
-    const form = document.getElementById('command-form');
-    const commandInput = document.getElementById('command-input');
     const commandStatus = document.getElementById('command-status');
 
     function formatNumber(value) {
@@ -245,11 +253,6 @@
         .attr('height', bin => innerHeight - y(bin.length));
     }
 
-    function setStatus(message, isError = false) {
-      commandStatus.textContent = message;
-      commandStatus.classList.toggle('error', isError);
-    }
-
     function validateValue(name, value) {
       if (!Number.isFinite(value)) throw new Error(`${name} must be a number`);
       if (name === 'sigma' && value <= 0) throw new Error('sigma must be greater than 0');
@@ -261,26 +264,23 @@
       }
     }
 
-    function runCommand(command) {
+    function handlePageCommand(command) {
       const normalized = command.trim().toLowerCase();
-      if (!normalized) return;
-      if (normalized === 'help') {
-        setStatus('use mu, sigma, bins, samples; reset restores defaults');
-        return;
-      }
       if (normalized === 'reset') {
         Object.assign(state, defaults);
         updateTitle();
         updateChart();
-        setStatus('reset');
-        return;
+        return 'reset';
       }
 
       const assignments = normalized.split(/[,\s]+/).filter(Boolean);
       const updates = {};
       for (const assignment of assignments) {
         const match = assignment.match(/^(mu|sigma|bins|samples)=([-+]?\d*\.?\d+(?:e[-+]?\d+)?)$/);
-        if (!match) throw new Error(`unknown command: ${assignment}`);
+        if (!match) {
+          if (assignments.some(part => part.includes('='))) throw new Error(`invalid assignment: ${assignment}`);
+          return undefined;
+        }
         const name = match[1];
         const value = Number(match[2]);
         validateValue(name, value);
@@ -289,23 +289,35 @@
       Object.assign(state, updates);
       updateTitle();
       updateChart();
-      setStatus('updated');
+      return 'updated';
     }
-
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      try {
-        runCommand(commandInput.value);
-        commandInput.value = '';
-      } catch (error) {
-        setStatus(error.message, true);
-      }
-      commandInput.focus();
-    });
 
     updateTitle();
     updateChart();
-    commandInput.focus();
+    window.pageConfig = {
+      pageId: 'normalPlot',
+      title: 'Normal distribution plot',
+      about: 'Sample and visualize a normal distribution as a histogram.',
+      siteRoot: '../../../',
+      currentDirectory: 'data/distributions/normal',
+      exitTarget: 'home',
+      promptSelector: '#shell',
+      statusSelector: '#command-status',
+      promptPrefix: '> ',
+      historyLimit: 0,
+      echoCommands: false,
+      commands: {
+        mu: { usage: 'mu=<number>', description: 'set the distribution mean' },
+        sigma: { usage: 'sigma=<positive number>', description: 'set the standard deviation' },
+        bins: { usage: 'bins=<integer>', description: 'set histogram bins (2-256)' },
+        samples: { usage: 'samples=<integer>', description: 'set sample count (1-1000000)' },
+        reset: { usage: 'reset', description: 'restore default distribution parameters' }
+      },
+      onCommand(command) {
+        return handlePageCommand(command);
+      }
+    };
   </script>
+  <script src="../../../js/input.js"></script>
 </body>
 </html>

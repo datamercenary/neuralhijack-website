@@ -6,8 +6,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="icon" href="favicon.svg" type="image/x-icon">
+<script src="./js/site-map.js"></script>
 </head>
 <body>
   <pre>
@@ -19,6 +19,21 @@
   <div id="interlaced"></div>  
   <div id="glare"></div>
 </body>
+<script>
+  window.pageConfig = {
+    pageId: 'home',
+    title: 'NeuralHijack home',
+    about: 'NeuralHijack learning tools and explorations.',
+    siteRoot: './',
+    currentDirectory: 'root',
+    exitTarget: 'home',
+    promptSelector: '#shell',
+    promptPrefix: '> ',
+    historyLimit: 6,
+    echoCommands: true,
+    commands: {}
+  };
+</script>
 <script src="./js/input.js"></script>
 
 </html>
