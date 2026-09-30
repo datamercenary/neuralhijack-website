@@ -35,6 +35,8 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      height: 100vh;
+      height: 100dvh;
       min-height: 100vh;
       min-height: 100dvh;
       padding: clamp(1rem, 3vw, 2.5rem) clamp(0.75rem, 4vw, 4rem);
@@ -51,7 +53,9 @@
 
     .normal-chart {
       flex: 1 1 auto;
-      min-height: 12rem;
+      min-height: 0;
+      max-height: 80vh;
+      max-height: 80dvh;
       width: 100%;
       min-width: 0;
       background: transparent;
@@ -61,13 +65,13 @@
       display: block;
       width: 100%;
       height: 100%;
-      min-height: 12rem;
       overflow: visible;
     }
 
     #histogram text {
       fill: var(--normal-muted);
-      font: 14px "Share Tech Mono", monospace;
+      font-family: "Share Tech Mono", monospace;
+      font-size: clamp(14px, 2.2vh, 22px);
     }
 
     #histogram .domain,
@@ -84,7 +88,8 @@
 
     .normal-axis-label {
       fill: var(--normal-muted);
-      font: 14px "Share Tech Mono", monospace;
+      font-family: "Share Tech Mono", monospace;
+      font-size: clamp(14px, 2.2vh, 22px);
     }
 
     .normal-prompt {
@@ -110,54 +115,18 @@
       white-space: pre-wrap;
     }
 
-    .normal-prompt-label {
-      flex: 0 0 auto;
-    }
-
-    #command-input {
-      box-sizing: border-box;
-      flex: 1 1 auto;
-      min-width: 0;
-      color: inherit;
-      background: transparent;
-      border: 0;
-      outline: 0;
-      font: inherit;
-      text-shadow: inherit;
-    }
-
-    #command-input::placeholder {
-      color: var(--normal-muted);
-      opacity: 0.7;
-    }
-
-    #command-status {
-      display: block;
-      min-height: 1.2em;
-      color: var(--normal-muted);
-      font-size: 0.72em;
-      padding-left: 1.8rem;
-      white-space: pre-wrap;
-      text-align: left;
-    }
-
-    #command-status.error {
-      color: rgb(212, 112, 112);
-      text-shadow: 0 0 4px rgb(212, 112, 112);
-    }
-
     @media (max-width: 600px) {
       .normal-page {
         gap: 0.65rem;
         padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
       }
 
-      #command-status {
-        text-align: left;
-      }
+    }
 
-      #histogram text {
-        font-size: 11px;
+    @media (orientation: portrait) {
+      #histogram text,
+      .normal-axis-label {
+        font-size: clamp(16px, 2.4vh, 24px);
       }
     }
   </style>
@@ -170,7 +139,6 @@
     </section>
     <div class="normal-command-area">
       <div id="shell" class="normal-prompt" aria-label="Command prompt"></div>
-      <output id="command-status" aria-live="polite">ready</output>
     </div>
   </main>
   <div id="interlaced"></div>
@@ -181,7 +149,6 @@
     const state = { ...defaults };
     const title = document.getElementById('distribution-title');
     const chart = d3.select('#histogram');
-    const commandStatus = document.getElementById('command-status');
 
     function formatNumber(value) {
       return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(4)));
@@ -205,11 +172,21 @@
       title.textContent = `Normal(mu=${formatNumber(state.mu)}, sigma=${formatNumber(state.sigma)}, bins=${state.bins}, samples=${state.samples})`;
     }
 
-    function updateChart() {
-      const values = generateSamples();
-      const width = 1000;
-      const height = 560;
-      const margin = { top: 24, right: 24, bottom: 64, left: 68 };
+    let sampleValues = generateSamples();
+
+    function updateChart(regenerateSamples = true) {
+      if (regenerateSamples) sampleValues = generateSamples();
+      const values = sampleValues;
+      const chartBounds = document.querySelector('.normal-chart').getBoundingClientRect();
+      const width = Math.max(320, Math.round(chartBounds.width));
+      const height = Math.max(220, Math.round(chartBounds.height));
+      const scale = Math.min(width / 1000, height / 560);
+      const margin = {
+        top: 24 * scale,
+        right: 24 * scale,
+        bottom: 64 * scale,
+        left: 68 * scale
+      };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
       const extent = d3.extent(values);
@@ -225,11 +202,11 @@
 
       plot.append('g')
         .attr('class', 'y-axis')
-        .call(d3.axisLeft(y).ticks(6).tickFormat(d3.format('~s')));
+        .call(d3.axisLeft(y).ticks(Math.max(3, Math.floor(innerHeight / 48))).tickFormat(d3.format('~s')));
       plot.append('g')
         .attr('class', 'x-axis')
         .attr('transform', `translate(0,${innerHeight})`)
-        .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('~g')));
+        .call(d3.axisBottom(x).ticks(Math.max(3, Math.floor(innerWidth / 72))).tickFormat(d3.format('~g')));
       plot.append('text')
         .attr('class', 'normal-axis-label')
         .attr('x', innerWidth / 2)
@@ -270,7 +247,7 @@
         Object.assign(state, defaults);
         updateTitle();
         updateChart();
-        return 'reset';
+        return true;
       }
 
       const assignments = normalized.split(/[,\s]+/).filter(Boolean);
@@ -289,11 +266,13 @@
       Object.assign(state, updates);
       updateTitle();
       updateChart();
-      return 'updated';
+      return true;
     }
 
     updateTitle();
     updateChart();
+    new ResizeObserver(() => updateChart(false)).observe(document.querySelector('.normal-chart'));
+    window.addEventListener('resize', () => updateChart(false));
     window.pageConfig = {
       pageId: 'normalPlot',
       title: 'Normal distribution plot',
@@ -302,10 +281,10 @@
       currentDirectory: 'data/distributions/normal',
       exitTarget: 'home',
       promptSelector: '#shell',
-      statusSelector: '#command-status',
       promptPrefix: '> ',
-      historyLimit: 0,
+      historyLimit: 3,
       echoCommands: false,
+      silentErrors: true,
       commands: {
         mu: { usage: 'mu=<number>', description: 'set the distribution mean' },
         sigma: { usage: 'sigma=<positive number>', description: 'set the standard deviation' },

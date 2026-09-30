@@ -219,6 +219,7 @@
       else if (result && result.message) writeMessage(result.message, result.error);
       return Boolean(result && result.navigate);
     }
+    if (config.silentErrors) return false;
     throw new Error(`command not found: ${verb}; type help`);
   }
 
@@ -257,7 +258,7 @@
       const navigated = dispatch(command);
       if (!navigated && !activeLine) makePromptLine();
     } catch (error) {
-      writeMessage(error.message, true);
+      if (!config.silentErrors) writeMessage(error.message, true);
       if (!activeLine) makePromptLine();
     }
   }
