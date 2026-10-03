@@ -10,6 +10,8 @@ The prompt is a custom HTML/JavaScript editor, not a native form or text input. 
 
 Pages configure the prompt with a `window.pageConfig` object before loading `js/input.js`. The shared [js/site-map.js](js/site-map.js) defines the site’s pages, directories, apps, launch arguments, aliases, and site-relative destinations.
 
+Multi-line command output uses the shared full-screen viewer (`NeuralHijackPrompt.showScreen()`), keeping the active prompt uncluttered. Use Up/Down or Space to scroll; `q`, Escape, Enter, or the Close button dismisses the viewer. Shared messages such as `help`, `about`, and `ls` use the same viewer, which can also be reused by page-specific menus or notices.
+
 Built-in commands:
 
 - `help` — list shared commands and commands registered by the current page.

@@ -238,6 +238,53 @@ body {
     animation: lines 0.066666666s linear infinite;
   }
 
+  .nh-screen-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    box-sizing: border-box;
+    padding: clamp(1rem, 4vh, 3rem) clamp(1rem, 5vw, 4rem);
+    background: rgba(20, 28, 24, 0.96);
+    border: none;
+  }
+
+  .nh-screen-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 72rem);
+    max-height: 100%;
+    min-height: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .nh-screen-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 0.25rem 0.5rem 1rem 0;
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font: inherit;
+    text-shadow: inherit;
+    scrollbar-color: rgb(114, 243, 187) transparent;
+  }
+
+  .nh-screen-content:focus-visible,
+  .nh-screen-content:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline-offset: 0 !important;
+  }
+
   @keyframes blink {
     0% {opacity: 0}
     30% {opacity: 1}

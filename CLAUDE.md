@@ -10,6 +10,7 @@ NeuralHijack is a browser-based educational project for math and language learni
 - `js/input.js` owns key handling, cursor editing, history, shared command dispatch, and global keyboard-default cancellation. Preserve and extend that interaction model rather than adding prompt-specific command branches to the shared editor.
 - Future visual/on-screen keyboards should call `NeuralHijackPrompt.input(key)` so physical and virtual keys use the same editor state machine.
 - Pages configure prompt behavior with `window.pageConfig`; `pageConfig.commands` supplies help metadata and can bind individual `run` functions, while `pageConfig.onCommand()` handles richer page-specific grammars. Handlers may be defined locally or supplied by a script loaded before `js/input.js`.
+- Use `NeuralHijackPrompt.showScreen()` for multi-line command output, menus, and notices rather than crowding the active prompt. The shared viewer scrolls with Up/Down or Space and closes with `q`, Escape, Enter, or its close button.
 - Keep page-specific command help synchronized with the commands actually accepted by the handler.
 
 ## Navigation and command dispatch

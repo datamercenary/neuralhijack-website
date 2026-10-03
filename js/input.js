@@ -8,6 +8,7 @@
   let siteMap;
   let mount;
   let activeLine;
+  let activeScreen;
   let outputRows = [];
   let siteRoot;
 
@@ -79,11 +80,75 @@
       status.classList.toggle('error', isError);
       return;
     }
-    const row = makeElement('p', `shell-output${isError ? ' wrong' : ''}`, String(message));
-    row.style.whiteSpace = 'pre-wrap';
-    mount.appendChild(row);
-    outputRows.push(row);
-    trimOutput();
+    showScreen({
+      title: isError ? 'Command notice' : (config.title || 'NeuralHijack'),
+      content: String(message),
+      isError
+    });
+  }
+
+  function closeScreen() {
+    if (!activeScreen) return;
+    const screen = activeScreen;
+    activeScreen = null;
+    screen.element.remove();
+    if (typeof screen.onClose === 'function') screen.onClose();
+  }
+
+  function showScreen({ title, content, isError = false, onClose } = {}) {
+    closeScreen();
+    const element = makeElement('div', 'nh-screen-overlay');
+    element.setAttribute('role', 'presentation');
+
+    const panel = makeElement('section', 'nh-screen-panel');
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-label', title || 'Information');
+
+    const body = makeElement('pre', `nh-screen-content${isError ? ' wrong' : ''}`, content || '');
+    body.tabIndex = -1;
+    body.setAttribute('aria-label', 'Scrollable information');
+    const clearFocusStyles = () => {
+      body.style.outline = 'none';
+      body.style.border = 'none';
+      body.style.boxShadow = 'none';
+      body.style.outlineOffset = '0';
+      if (document.activeElement === body) body.blur();
+    };
+    clearFocusStyles();
+    body.addEventListener('focus', clearFocusStyles);
+
+    panel.appendChild(body);
+    element.appendChild(panel);
+    document.body.appendChild(element);
+    activeScreen = { element, body, onClose };
+    return element;
+  }
+
+  function handleScreenKey(key, shiftKey = false) {
+    if (!activeScreen) return false;
+    const normalizedKey = String(key).toLowerCase();
+    const scrollArea = activeScreen.body;
+    const scrollDistance = Math.max(64, scrollArea.clientHeight * 0.75);
+
+    if (normalizedKey === 'escape' || normalizedKey === 'enter' || normalizedKey === 'q') {
+      closeScreen();
+    } else if ((normalizedKey === ' ' || normalizedKey === 'space') && shiftKey) {
+      scrollArea.scrollTop -= scrollDistance;
+    } else if (normalizedKey === 'arrowdown' || normalizedKey === ' ' || normalizedKey === 'space') {
+      scrollArea.scrollTop += scrollDistance;
+    } else if (normalizedKey === 'arrowup') {
+      scrollArea.scrollTop -= scrollDistance;
+    } else if (normalizedKey === 'pageup') {
+      scrollArea.scrollTop -= scrollArea.clientHeight * 0.9;
+    } else if (normalizedKey === 'pagedown') {
+      scrollArea.scrollTop += scrollArea.clientHeight * 0.9;
+    } else if (normalizedKey === 'home') {
+      scrollArea.scrollTop = 0;
+    } else if (normalizedKey === 'end') {
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }
+    return true;
   }
 
   function currentDirectory() {
@@ -263,7 +328,8 @@
     }
   }
 
-  function input(key) {
+  function input(key, options = {}) {
+    if (handleScreenKey(key, options.shiftKey)) return;
     if (!activeLine) return;
     const value = activeText();
     let position = activeLine.position;
@@ -309,14 +375,16 @@
     makePromptLine();
     document.addEventListener('keydown', event => {
       event.preventDefault();
-      input(event.key);
+      input(event.key, { shiftKey: event.shiftKey });
     }, true);
   }
 
   global.NeuralHijackPrompt = {
     initialize,
     input,
-    submit: submitActiveLine
+    submit: submitActiveLine,
+    showScreen,
+    closeScreen
   };
 
   if (global.pageConfig && global.siteMap) {
