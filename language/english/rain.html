@@ -52,6 +52,7 @@
       right: 0.75rem;
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 1rem;
       z-index: 10;
       pointer-events: none;
@@ -153,6 +154,13 @@
     const wrongEl = document.getElementById('wrong');
     const missesEl = document.getElementById('misses');
 
+    const BASE_FALL_SPEED = 78;
+    const MAX_FALL_SPEED_MULTIPLIER = 3;
+    const SPEED_MAX_SCORE = 100;
+    const BASE_SPAWN_FREQUENCY = 0.5;
+    const FREQUENCY_SQRT_C = 0.06;
+    const PIXEL_STEP_PX = 8;
+
     const state = {
       letters: [],
       correct: 0,
@@ -163,12 +171,23 @@
       paused: false,
       nextSpawnAt: 0,
       lastFrame: 0,
-      spawnCooldown: 650,
+      spawnFrequency: BASE_SPAWN_FREQUENCY,
       keyboardOffset: 0,
       letterSize: 34,
-      fallSpeed: 78,
-      pixelStep: 3
+      fallSpeed: BASE_FALL_SPEED,
+      pixelStep: PIXEL_STEP_PX
     };
+
+    function progressionOutputs(x) {
+      const progress = Math.max(0, x);
+      const speedProgress = Math.min(progress / SPEED_MAX_SCORE, 1);
+      return {
+        frequency: BASE_SPAWN_FREQUENCY + Math.sqrt(progress * FREQUENCY_SQRT_C),
+        speed: BASE_FALL_SPEED * (
+          1 + (MAX_FALL_SPEED_MULTIPLIER - 1) * speedProgress
+        )
+      };
+    }
 
     function setKeyboardOffset() {
       const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
@@ -185,12 +204,15 @@
       correctEl.textContent = String(state.correct);
       wrongEl.textContent = String(state.wrong);
       missesEl.textContent = String(state.misses);
+      const outputs = progressionOutputs(state.correct - state.misses - state.wrong);
+      state.spawnFrequency = outputs.frequency;
+      state.fallSpeed = outputs.speed;
     }
 
     function openStartScreen() {
       if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.showScreen === 'function') {
         window.NeuralHijackPrompt.showScreen({
-          content: 'Press any lowercase letter or Space to begin.\n\nEsc pauses the game; press Esc again to return home.'
+          content: '\n\n\nPress any lowercase letter or Space to begin.\n\nEsc pauses the game; press Esc again to return home.'
         });
       }
     }
@@ -206,7 +228,7 @@
       state.running = true;
       state.paused = false;
       state.lastFrame = 0;
-      state.nextSpawnAt = 0;
+      state.nextSpawnAt = performance.now() + 1000 / state.spawnFrequency;
       closePauseScreen();
       if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.closeScreen === 'function') {
         window.NeuralHijackPrompt.closeScreen();
@@ -218,7 +240,7 @@
       state.paused = true;
       if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.showScreen === 'function') {
         window.NeuralHijackPrompt.showScreen({
-          content: 'Paused.\n\nPress any lowercase letter or Space to resume.\nPress Esc again to return home.'
+          content: '\n\n\nPaused.\n\nPress any lowercase letter or Space to resume.\nPress Esc again to return home.'
         });
       }
     }
@@ -227,6 +249,7 @@
       state.running = true;
       state.paused = false;
       state.lastFrame = 0;
+      state.nextSpawnAt = performance.now() + 1000 / state.spawnFrequency;
       closePauseScreen();
     }
 
@@ -249,7 +272,6 @@
         element,
         x: left,
         y: -state.letterSize,
-        speed: state.fallSpeed,
         size: state.letterSize
       };
 
@@ -284,12 +306,12 @@
 
       if (now >= state.nextSpawnAt) {
         spawnLetter();
-        state.nextSpawnAt = now + state.spawnCooldown;
+        state.nextSpawnAt = now + 1000 / state.spawnFrequency;
       }
 
       const activeLetters = [];
       for (const record of state.letters) {
-        record.y += record.speed * delta;
+        record.y += state.fallSpeed * delta;
         const steppedY = Math.round(record.y / state.pixelStep) * state.pixelStep;
         record.element.style.top = `${steppedY}px`;
 
