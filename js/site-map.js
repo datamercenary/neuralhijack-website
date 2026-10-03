@@ -17,16 +17,28 @@ window.siteMap = {
     normalPlot: {
       href: 'data/distributions/normal/plot.html',
       title: 'Normal distribution plot'
+    },
+    englishRain: {
+      href: 'language/english/rain.html',
+      title: 'Alphabet Rain'
     }
   },
   directories: {
     root: {
       parent: null,
-      children: ['math', 'data']
+      children: ['math', 'data', 'language']
     },
     math: {
       parent: 'root',
       children: ['math/addition', 'math/multiplication']
+    },
+    language: {
+      parent: 'root',
+      children: ['language/english']
+    },
+    'language/english': {
+      parent: 'language',
+      children: []
     },
     'math/addition': {
       parent: 'math',
@@ -76,6 +88,15 @@ window.siteMap = {
       args: ['--plot'],
       aliases: ['normal'],
       description: 'explore a normal-distribution histogram'
+    },
+    englishRain: {
+      path: 'language/english',
+      parent: 'language/english',
+      pageId: 'englishRain',
+      href: 'language/english/rain.html',
+      args: ['--rain'],
+      aliases: ['rain', 'english'],
+      description: 'play the alphabet rain typing game'
     }
   }
 };

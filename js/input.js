@@ -131,6 +131,17 @@
     const scrollArea = activeScreen.body;
     const scrollDistance = Math.max(64, scrollArea.clientHeight * 0.75);
 
+    if (config && typeof config.onScreenKey === 'function') {
+      const handled = config.onScreenKey({
+        key: normalizedKey,
+        rawKey: key,
+        shiftKey,
+        closeScreen,
+        scrollArea
+      });
+      if (handled) return true;
+    }
+
     if (normalizedKey === 'escape' || normalizedKey === 'enter' || normalizedKey === 'q') {
       closeScreen();
     } else if ((normalizedKey === ' ' || normalizedKey === 'space') && shiftKey) {
@@ -330,6 +341,10 @@
 
   function input(key, options = {}) {
     if (handleScreenKey(key, options.shiftKey)) return;
+    if (config && typeof config.onKey === 'function') {
+      const handled = config.onKey(key, options);
+      if (handled) return;
+    }
     if (!activeLine) return;
     const value = activeText();
     let position = activeLine.position;

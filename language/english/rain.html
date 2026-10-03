@@ -61,14 +61,11 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.35rem 0.7rem;
-      border: 1px solid rgba(147, 209, 182, 0.35);
-      background: rgba(18, 25, 24, 0.45);
+      padding: 0;
       color: var(--rain-text);
       text-transform: lowercase;
       letter-spacing: 0.08em;
-      font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-      box-shadow: 0 0 12px rgba(114, 243, 187, 0.15);
+      font-size: 1.5rem;
     }
 
     .rain-stat strong {
@@ -83,7 +80,6 @@
       height: calc(100vh - var(--rain-keyboard-offset));
       height: calc(100dvh - var(--rain-keyboard-offset));
       overflow: hidden;
-      border: 1px solid rgba(147, 209, 182, 0.24);
       background: rgba(14, 20, 18, 0.4);
       box-shadow: inset 0 0 22px rgba(114, 243, 187, 0.08);
     }
@@ -105,15 +101,15 @@
       color: var(--rain-glow);
       text-shadow: 0 0 8px rgba(114, 243, 187, 0.9);
       user-select: none;
-      will-change: transform;
       font-weight: 400;
       text-transform: lowercase;
+      line-height: 1;
+      font-size: 34px;
     }
 
     .rain-letter.hit {
       opacity: 0;
-      transform: scale(1.4);
-      transition: opacity 0.18s ease, transform 0.18s ease;
+      transition: opacity 0.18s ease;
     }
 
     @media (max-width: 600px) {
@@ -128,7 +124,7 @@
       }
 
       .rain-play {
-        border-width: 1px;
+        border: none;
       }
     }
   </style>
@@ -136,7 +132,8 @@
 <body>
   <div class="rain-app">
     <div class="rain-hud" aria-live="polite">
-      <div class="rain-stat"><span>score</span><strong id="score">0</strong></div>
+      <div class="rain-stat"><span>correct</span><strong id="correct">0</strong></div>
+      <div class="rain-stat"><span>wrong</span><strong id="wrong">0</strong></div>
       <div class="rain-stat"><span>misses</span><strong id="misses">0</strong></div>
     </div>
 
@@ -147,22 +144,32 @@
 
   <div id="interlaced"></div>
   <div id="glare"></div>
+  <div id="shell" aria-label="Prompt" style="position:absolute;left:-9999px;top:0;opacity:0;pointer-events:none;overflow:hidden;"></div>
 
+  <script src="../../js/site-map.js"></script>
   <script>
     const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
     const gameArea = document.getElementById('rain-play');
     const layer = document.getElementById('rain-layer');
-    const scoreEl = document.getElementById('score');
+    const correctEl = document.getElementById('correct');
+    const wrongEl = document.getElementById('wrong');
     const missesEl = document.getElementById('misses');
 
     const state = {
       letters: [],
-      score: 0,
+      correct: 0,
+      wrong: 0,
       misses: 0,
+      started: false,
+      running: false,
+      paused: false,
       nextSpawnAt: 0,
       lastFrame: 0,
-      spawnCooldown: 550,
-      keyboardOffset: 0
+      spawnCooldown: 650,
+      keyboardOffset: 0,
+      letterSize: 34,
+      fallSpeed: 78,
+      pixelStep: 3
     };
 
     function setKeyboardOffset() {
@@ -177,27 +184,75 @@
     }
 
     function updateHud() {
-      scoreEl.textContent = String(state.score);
+      correctEl.textContent = String(state.correct);
+      wrongEl.textContent = String(state.wrong);
       missesEl.textContent = String(state.misses);
+    }
+
+    function openStartScreen() {
+      if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.showScreen === 'function') {
+        window.NeuralHijackPrompt.showScreen({
+          content: 'Press any lowercase letter or Space to begin.\n\nEsc pauses the game; press Esc again to return home.'
+        });
+      }
+    }
+
+    function closePauseScreen() {
+      if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.closeScreen === 'function') {
+        window.NeuralHijackPrompt.closeScreen();
+      }
+    }
+
+    function startGame() {
+      state.started = true;
+      state.running = true;
+      state.paused = false;
+      state.lastFrame = 0;
+      state.nextSpawnAt = 0;
+      closePauseScreen();
+      if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.closeScreen === 'function') {
+        window.NeuralHijackPrompt.closeScreen();
+      }
+    }
+
+    function pauseGame() {
+      state.running = false;
+      state.paused = true;
+      if (window.NeuralHijackPrompt && typeof window.NeuralHijackPrompt.showScreen === 'function') {
+        window.NeuralHijackPrompt.showScreen({
+          content: 'Paused.\n\nPress any lowercase letter or Space to resume.\nPress Esc again to return home.'
+        });
+      }
+    }
+
+    function resumeGame() {
+      state.running = true;
+      state.paused = false;
+      state.lastFrame = 0;
+      closePauseScreen();
+    }
+
+    function exitGame() {
+      window.location.assign(new URL('../../index.html', document.baseURI).href);
     }
 
     function spawnLetter() {
       const letter = alphabet[Math.floor(Math.random() * alphabet.length)];
-      const size = 22 + Math.random() * 22;
       const element = document.createElement('div');
       element.className = 'rain-letter';
       element.textContent = letter;
-      element.style.fontSize = `${size}px`;
-      element.style.left = `${Math.random() * Math.max(16, gameArea.clientWidth - size * 1.4)}px`;
-      element.style.top = `${-size}px`;
+      const left = Math.random() * Math.max(8, gameArea.clientWidth - state.letterSize * 1.4);
+      element.style.left = `${left}px`;
+      element.style.top = `${-state.letterSize}px`;
+      element.style.fontSize = `${state.letterSize}px`;
 
       const record = {
         letter,
         element,
-        x: parseFloat(element.style.left),
-        y: -size,
-        speed: 42 + Math.random() * 40,
-        size
+        x: left,
+        y: -state.letterSize,
+        speed: state.fallSpeed,
+        size: state.letterSize
       };
 
       layer.appendChild(element);
@@ -220,19 +275,25 @@
     }
 
     function tick(now) {
+      if (!state.running) {
+        requestAnimationFrame(tick);
+        return;
+      }
+
       if (!state.lastFrame) state.lastFrame = now;
       const delta = Math.min((now - state.lastFrame) / 1000, 0.05);
       state.lastFrame = now;
 
       if (now >= state.nextSpawnAt) {
         spawnLetter();
-        state.nextSpawnAt = now + state.spawnCooldown * (0.8 + Math.random() * 0.8);
+        state.nextSpawnAt = now + state.spawnCooldown;
       }
 
       const activeLetters = [];
       for (const record of state.letters) {
         record.y += record.speed * delta;
-        record.element.style.top = `${record.y}px`;
+        const steppedY = Math.round(record.y / state.pixelStep) * state.pixelStep;
+        record.element.style.top = `${steppedY}px`;
 
         if (record.y > gameArea.clientHeight + record.size) {
           onMiss(record);
@@ -241,36 +302,131 @@
         }
       }
       state.letters = activeLetters;
-
       requestAnimationFrame(tick);
     }
 
-    function handleTyping(event) {
-      const key = event.key ? event.key.toLowerCase() : '';
-      if (!/^[a-z]$/.test(key)) return;
-      event.preventDefault();
-
+    function handleTypedLetter(letter) {
       const matching = state.letters
-        .filter(record => record.letter === key)
+        .filter(record => record.letter === letter)
         .sort((a, b) => b.y - a.y);
 
-      if (!matching.length) return;
+      if (!matching.length) {
+        state.wrong += 1;
+        updateHud();
+        return;
+      }
 
       const target = matching[0];
-      state.score += 1;
+      state.correct += 1;
       updateHud();
       removeLetter(target);
     }
 
-    window.addEventListener('keydown', handleTyping);
+    window.pageConfig = {
+      pageId: 'alphabetRain',
+      title: 'Alphabet Rain',
+      about: 'Type lowercase letters to clear the falling stream.',
+      siteRoot: '../../',
+      exitTarget: 'home',
+      currentDirectory: 'root',
+      promptSelector: '#shell',
+      promptPrefix: '> ',
+      echoCommands: false,
+      silentErrors: true,
+      onKey(key) {
+        const normalized = String(key).toLowerCase();
+        if (normalized === 'escape') {
+          if (state.paused) {
+            exitGame();
+            return true;
+          }
+          if (state.started && !state.paused) {
+            pauseGame();
+            return true;
+          }
+          return true;
+        }
+        if (normalized === ' ' || normalized === 'space') {
+          if (!state.started) {
+            startGame();
+            return true;
+          }
+          if (state.paused) {
+            resumeGame();
+            return true;
+          }
+          return true;
+        }
+        if (/^[a-z]$/.test(normalized)) {
+          if (!state.started) {
+            startGame();
+            handleTypedLetter(normalized);
+            return true;
+          }
+          if (state.paused) {
+            resumeGame();
+            return true;
+          }
+          handleTypedLetter(normalized);
+          return true;
+        }
+        return false;
+      },
+      onScreenKey({ key, closeScreen: closeOverlay }) {
+        if (key === 'escape') {
+          if (state.paused || state.started) {
+            exitGame();
+            return true;
+          }
+          return true;
+        }
+        if (key === ' ' || key === 'space') {
+          if (!state.started) {
+            startGame();
+            closeOverlay();
+            return true;
+          }
+          if (state.paused) {
+            resumeGame();
+            closeOverlay();
+            return true;
+          }
+          closeOverlay();
+          return true;
+        }
+        if (/^[a-z]$/.test(key)) {
+          if (!state.started) {
+            startGame();
+            handleTypedLetter(key);
+            closeOverlay();
+            return true;
+          }
+          if (state.paused) {
+            resumeGame();
+            closeOverlay();
+            return true;
+          }
+          handleTypedLetter(key);
+          closeOverlay();
+          return true;
+        }
+        return false;
+      }
+    };
+
     window.addEventListener('resize', () => {
       setKeyboardOffset();
     });
 
     setKeyboardOffset();
     updateHud();
-    state.nextSpawnAt = 0;
+    window.addEventListener('load', () => {
+      if (!state.started && !state.paused) {
+        openStartScreen();
+      }
+    }, { once: true });
     requestAnimationFrame(tick);
   </script>
+  <script src="../../js/input.js"></script>
 </body>
 </html>
