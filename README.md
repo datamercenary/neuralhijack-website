@@ -46,3 +46,28 @@ The normal plot is a D3.js v7 SVG histogram with a maximum sample count of 1,000
 - Preserve the custom command-prompt and keyboard interaction model.
 - Use capability queries (for example, coarse-pointer detection) as input hints; use orientation and aspect-ratio media queries to adapt layout.
 - Keep navigation in the site map and resolve destinations from the configured site root.
+
+## Development and GitHub Pages workflow
+
+`main` is the production branch deployed by GitHub Pages. Do not commit directly to it.
+
+1. Create a topic branch from the current `main`:
+   ```sh
+   git switch main
+   git pull --ff-only
+   git switch -c feature/<short-topic-name>
+   ```
+2. Make and test incremental changes on the feature branch.
+3. Push the feature branch and open a pull request into `main`:
+   ```sh
+   git push -u origin feature/<short-topic-name>
+   ```
+4. Review the pull request, confirm the static-validation check passes, and merge it with a merge commit, squash merge, or rebase merge.
+5. Sync the local production branch after merge:
+   ```sh
+   git switch main
+   git pull --ff-only
+   git branch -d feature/<short-topic-name>
+   ```
+
+For fixes or experiments, use names such as `fix/<short-topic>` or `experiment/<short-topic>` when helpful. Keep commits focused and descriptive. Branch protection can be enabled in GitHub under **Settings > Branches** by requiring pull requests and the `validate` status check before changes reach `main`.
