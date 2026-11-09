@@ -74,17 +74,12 @@
 
   function writeMessage(message, isError = false) {
     if (message === undefined || message === null || message === '') return;
-    const status = config.statusSelector && document.querySelector(config.statusSelector);
-    if (status) {
-      status.textContent = String(message);
-      status.classList.toggle('error', isError);
-      return;
-    }
-    showScreen({
-      title: isError ? 'Command notice' : (config.title || 'NeuralHijack'),
-      content: String(message),
-      isError
-    });
+    const row = makeElement('div', 'shell-line');
+    const paragraph = makeElement('p', isError ? 'wrong' : '', String(message));
+    row.appendChild(paragraph);
+    mount.appendChild(row);
+    outputRows.push(row);
+    trimOutput();
   }
 
   function closeScreen() {
@@ -167,9 +162,14 @@
   }
 
   function normalizePath(inputPath, basePath = currentDirectory()) {
-    const parts = inputPath.startsWith('/') ? [] : basePath.split('/').filter(Boolean);
-    for (const part of inputPath.split('/')) {
+    const pathParts = inputPath.split('/');
+    const startsAtRoot = inputPath.startsWith('/') || pathParts[0] === 'root';
+    const parts = startsAtRoot || basePath === 'root'
+      ? []
+      : basePath.split('/').filter(Boolean);
+    for (const part of pathParts) {
       if (!part || part === '.') continue;
+      if (part === 'root' && parts.length === 0) continue;
       if (part === '..') parts.pop();
       else parts.push(part);
     }
