@@ -111,6 +111,15 @@
       transition: opacity 0.02s ease;
     }
 
+    .nh-screen-overlay {
+      background: radial-gradient(
+        circle at center,
+        rgba(49, 55, 53, 0.58) 0%,
+        rgba(11, 32, 24, 0.82) 70%,
+        rgba(11, 32, 24, 0.92) 100%
+      );
+    }
+
     @media (max-width: 600px) {
       .rain-app {
         padding: 0.5rem;
@@ -356,14 +365,11 @@
       onKey(key) {
         const normalized = String(key).toLowerCase();
         if (normalized === 'escape') {
-          if (state.paused) {
+          if (!state.started || state.paused) {
             exitGame();
             return true;
           }
-          if (state.started && !state.paused) {
-            pauseGame();
-            return true;
-          }
+          pauseGame();
           return true;
         }
         if (normalized === ' ' || normalized === 'space') {
@@ -394,10 +400,7 @@
       },
       onScreenKey({ key, closeScreen: closeOverlay }) {
         if (key === 'escape') {
-          if (state.paused || state.started) {
-            exitGame();
-            return true;
-          }
+          exitGame();
           return true;
         }
         if (key === ' ' || key === 'space') {
